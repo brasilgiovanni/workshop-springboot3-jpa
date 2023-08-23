@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.educandoweb.course.entities.User;
 
+// aqui poderia ser colocado o @Repository para indicar que é um repositório, 
+// porém essa classe já esta implementando o 'JpaRepository', logo não precisa
 public interface UserRepository extends JpaRepository<User, Long>{
 	// não é necessário fazer a implementação nessa interface, pois o Spring JPA já possue como Default
 
