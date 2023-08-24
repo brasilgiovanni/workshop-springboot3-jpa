@@ -13,43 +13,49 @@ import com.educandoweb.course.repositories.UserRepository;
 import com.educandoweb.course.services.exceptions.DatabaseException;
 import com.educandoweb.course.services.exceptions.ResourceNotFoundException;
 
-@Service // indica que é uma clsse de Serviço, existe ainda o Repository e tambem o Component que é um modo geral
+import jakarta.persistence.EntityNotFoundException;
+
+@Service // indica que é uma clsse de Serviço, existe ainda o Repository e tambem o
+			// Component que é um modo geral
 public class UserService {
-	
+
 	@Autowired
 	private UserRepository repository;
-	
+
 	public List<User> findAll() {
 		return repository.findAll();
 	}
-	
+
 	public User findById(Long id) {
 		Optional<User> obj = repository.findById(id);
-		//return obj.get(); ao inves de aplicar o get, podemos aplicar o "orElseThrow" que faz a mesma coisa, porém permite lançar uma exceção caso de falha
+		// return obj.get(); ao inves de aplicar o get, podemos aplicar o "orElseThrow"
+		// que faz a mesma coisa, porém permite lançar uma exceção caso de falha
 		return obj.orElseThrow(() -> new ResourceNotFoundException(id));
 	}
-	
+
 	public User insert(User obj) {
 		return repository.save(obj);
 	}
-	
+
 	public void delete(Long id) {
 		try {
 			repository.deleteById(id);
-		}
-		catch(EmptyResultDataAccessException e) {
+		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException(id);
-		}
-		catch(DataIntegrityViolationException e) {
+		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException(e.getMessage());
 		}
-		
+
 	}
-	
+
 	public User update(Long id, User obj) {
-		User entity = repository.getReferenceById(id);
-		updateData(entity, obj);
-		return repository.save(entity);
+		try {
+			User entity = repository.getReferenceById(id);
+			updateData(entity, obj);
+			return repository.save(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 	}
 
 	private void updateData(User entity, User obj) {
