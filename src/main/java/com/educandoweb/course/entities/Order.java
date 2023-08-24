@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.educandoweb.course.entities.enums.OrderStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -34,6 +36,11 @@ public class Order implements Serializable {
 
 	@OneToMany(mappedBy = "id.order")
 	private Set<OrderItem> items = new HashSet<>();
+	
+	// A classe order é independente da classe Payment e tem relação 1 para 1
+	// no método cascade, nós vamos solicitar ao banco de dados que o pedido tem id = 1, então o pagamento de referência também é 1
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+	private Payment payment;
 	
 	public Order() {
 	}
@@ -84,6 +91,15 @@ public class Order implements Serializable {
 		return items;
 	}
 	
+	
+	public Payment getPayment() {
+		return payment;
+	}
+
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
